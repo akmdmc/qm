@@ -1,20 +1,37 @@
 <template>
+  <Chatroom></Chatroom>
   <div class="content">
-    <svg @click="resultListChange()" t="1680681348049" class="listIcon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3199" width="64" height="64"><path d="M725.333333 682.666667v-85.333334h42.666667v85.333334h85.333333v42.666666h-85.333333v85.333334h-42.666667v-85.333334h-85.333333v-42.666666h85.333333zM170.666667 256h682.666666v42.666667H170.666667V256z m0 426.666667h426.666666v42.666666H170.666667v-42.666666z m0-213.333334h682.666666v42.666667H170.666667v-42.666667z" fill="#FF950C" p-id="3200"></path></svg>
-    <div :style="resultStyle" class="resultList" >
+    <svg
+      @click="resultListChange()"
+      t="1680681348049"
+      class="listIcon"
+      viewBox="0 0 1024 1024"
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+      p-id="3199"
+      width="64"
+      height="64"
+    >
+      <path
+        d="M725.333333 682.666667v-85.333334h42.666667v85.333334h85.333333v42.666666h-85.333333v85.333334h-42.666667v-85.333334h-85.333333v-42.666666h85.333333zM170.666667 256h682.666666v42.666667H170.666667V256z m0 426.666667h426.666666v42.666666H170.666667v-42.666666z m0-213.333334h682.666666v42.666667H170.666667v-42.666667z"
+        fill="#FF950C"
+        p-id="3200"
+      ></path>
+    </svg>
+    <div :style="resultStyle" class="resultList">
       <div v-for="item in results" class="result">
-        <img style="width: 50px;" :src="item.imgSrc" alt="">
+        <img style="width: 50px" :src="item.imgSrc" alt="" />
         <div class="resultText">{{ item.result }}</div>
       </div>
-      <h4 style="margin-top: 10px;margin-bottom: 5px;">预测结果列表</h4>
+      <h4 style="margin-top: 10px; margin-bottom: 5px">预测结果列表</h4>
     </div>
     <div class="imgContent">
       <span v-if="spanDisplay">点击下方按钮上传照片</span>
-      <img v-if="imgDisplay" class="img" :src="imgSrc" alt="">
+      <img v-if="imgDisplay" class="img" :src="imgSrc" alt="" />
     </div>
     <div class="file">
       <label class="filelabel" for="input">上传照片</label>
-      <input id="input" type="file" @change="upload()">
+      <input id="input" type="file" @change="upload()" />
       <button class="btn" @click="predict()">预测</button>
     </div>
     <div :style="messageStyle" class="messageBox">{{ message }}</div>
@@ -24,10 +41,11 @@
 <script setup lang="ts">
 import axios from "axios";
 import { ref, reactive } from "vue";
+import Chatroom from "@/components/Chatroom.vue";
 
-interface result{
-  imgSrc:string,
-  result:string
+interface result {
+  imgSrc: string;
+  result: string;
 }
 
 const imgSrc = ref("");
@@ -38,7 +56,7 @@ const results = reactive([] as result[]);
 const resultIsshow = ref(true);
 const resultStyle = reactive({
   display: "flex",
-  transform:"scale(1)",
+  transform: "scale(1)",
   width: "20vw",
   height: "80vh",
 });
@@ -52,7 +70,7 @@ const messageStyle = reactive({
 });
 
 async function upload(this: any) {
-  const input = document.querySelector('#input') as HTMLInputElement;
+  const input = document.querySelector("#input") as HTMLInputElement;
   if (!input.files) return;
   imgSrc.value = URL.createObjectURL(input.files[0]);
   imgDisplay.value = true;
@@ -68,28 +86,34 @@ async function predict() {
     method: "post",
     data: formData,
   })
-    .then(res => {
-      showMessage(`预测结果 : ${res.data.class_name}`, false, "50%", "8%", "20px 40px");
-      if(results.length > 9) results.shift();
+    .then((res) => {
+      showMessage(
+        `预测结果 : ${res.data.class_name}`,
+        false,
+        "50%",
+        "8%",
+        "20px 40px"
+      );
+      if (results.length > 9) results.shift();
       results.push({
         imgSrc: imgSrc.value,
         result: res.data.class_name,
       });
       console.log(results);
     })
-    .catch(err => {
+    .catch((err) => {
       showMessage("上传失败");
       // console.log(err);
     });
 }
 
-function resultListChange(){
-  if(resultIsshow.value){
+function resultListChange() {
+  if (resultIsshow.value) {
     resultIsshow.value = false;
     resultStyle.width = "0";
     resultStyle.height = "0";
     resultStyle.transform = "scale(0)";
-  }else{
+  } else {
     resultIsshow.value = true;
     resultStyle.width = "20vw";
     resultStyle.height = "80vh";
@@ -97,7 +121,13 @@ function resultListChange(){
   }
 }
 
-function showMessage(msg: string, isAotuHide: boolean = true, left: string = messageStyle.left, top: string = messageStyle.top, padding: string = messageStyle.padding) {
+function showMessage(
+  msg: string,
+  isAotuHide: boolean = true,
+  left: string = messageStyle.left,
+  top: string = messageStyle.top,
+  padding: string = messageStyle.padding
+) {
   messageStyle.left = left;
   messageStyle.top = top;
   messageStyle.padding = padding;
@@ -137,7 +167,7 @@ function showMessage(msg: string, isAotuHide: boolean = true, left: string = mes
 
 .imgContent span {
   font-size: 1.5rem;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: "Courier New", Courier, monospace;
   color: rgb(255, 255, 255, 0.6);
 }
 
@@ -209,7 +239,7 @@ function showMessage(msg: string, isAotuHide: boolean = true, left: string = mes
   transition: all 0.1s linear;
 }
 
-.listIcon{
+.listIcon {
   position: fixed;
   top: 9.5%;
   right: 5%;
@@ -242,7 +272,7 @@ function showMessage(msg: string, isAotuHide: boolean = true, left: string = mes
   transition: all 0.2s ease-in-out;
 }
 
-.result{
+.result {
   padding: 10px;
   width: 100%;
   display: flex;
@@ -267,6 +297,5 @@ function showMessage(msg: string, isAotuHide: boolean = true, left: string = mes
     margin-top: 100px;
     width: 80vw;
   }
-
 }
 </style>
